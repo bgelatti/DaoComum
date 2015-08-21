@@ -3,35 +3,10 @@ unit DaoUni;
 interface
 
 uses Db, Base, Rtti, Atributos, system.SysUtils, system.Classes,
-  system.Generics.Collections, Uni, PostgreSQLUniProvider;
+  system.Generics.Collections, Uni, PostgreSQLUniProvider, BaseConnection,
+  BaseTransaction, TransactionUni, RecParams, Table, ConnectionUni;
 
 type
-  TTransactionUni = class(TBaseTransaction)
-  private
-    FTransaction: TUniTransaction;
-  public
-    constructor Create(ABase: TUniConnection);
-    destructor Destroy; override;
-    function InTransaction: Boolean; override;
-    procedure StartTransaction; override;
-    procedure Commit; override;
-    procedure RollBack; override;
-    property Transaction: TUniTransaction read FTransaction write FTransaction;
-  end;
-
-  TConnectionUni = class(TBaseConnection)
-  private
-    FDatabase: TUniConnection;
-    FTransQuery: TUniTransaction;
-  public
-    constructor Create();
-    destructor Destroy; override;
-    function Connected: Boolean; override;
-    procedure Connect; override;
-    property Database: TUniConnection read FDatabase write FDatabase;
-    property TransQuery: TUniTransaction read FTransQuery write FTransQuery;
-  end;
-
   TDaoUni = class(TBaseDao)
   private
     FConnection: TConnectionUni;
@@ -68,81 +43,6 @@ implementation
 uses
   system.TypInfo;
 
-{ TTransactionUni }
-
-constructor TTransactionUni.Create(ABase: TUniConnection);
-begin
-  inherited Create;
-
-  FTransaction := TUniTransaction.Create(nil);
-  with FTransaction do
-  begin
-    DefaultConnection := ABase;
-  end;
-end;
-
-destructor TTransactionUni.Destroy;
-begin
-  inherited;
-end;
-
-function TTransactionUni.InTransaction: Boolean;
-begin
-  Result := FTransaction.Active;
-end;
-
-procedure TTransactionUni.StartTransaction;
-begin
-  if not FTransaction.Active then
-  begin
-    FTransaction.StartTransaction;
-  end;
-end;
-
-procedure TTransactionUni.RollBack;
-begin
-  FTransaction.RollBack;
-end;
-
-procedure TTransactionUni.Commit;
-begin
-  FTransaction.Commit;
-end;
-
-{ TConnectionUni}
-
-constructor TConnectionUni.Create();
-begin
-  inherited Create;
-  FDatabase := TUniConnection.Create(nil);
-  FDatabase.LoginPrompt := false;
-end;
-
-destructor TConnectionUni.Destroy;
-begin
-  inherited;
-end;
-
-function TConnectionUni.Connected: Boolean;
-begin
-  Result := FDatabase.Connected;
-end;
-
-procedure TConnectionUni.Connect;
-begin
-  inherited;
-  with FDatabase do
-  begin
-    Database := LocalBD;
-    Port := Prt;
-    Server := Serv;
-    ProviderName := Provider;
-    Username := User;
-    Password := Pass;
-    Connected := True;
-  end;
-end;
-
 { TDaoUni }
 
 constructor TDaoUni.Create(AConnection: TConnectionUni; ATransaction: TTransactionUni);
@@ -154,7 +54,7 @@ begin
   FConnection := AConnection;
   with FConnection do
   begin
-    FTransQuery := TUniTransaction.Create(nil);
+    TransQuery := TUniTransaction.Create(nil);
 
     with TransQuery do
     begin
@@ -165,7 +65,7 @@ begin
 
   Qry := TUniQuery.Create(nil);
   Qry.Connection := FConnection.Database;
-  Qry.Transaction := ATransaction.FTransaction;
+  Qry.Transaction := ATransaction.Transaction;
 
   MyDataSet := TUniQuery.Create(nil);
   MyDataSet.Connection := FConnection.Database;

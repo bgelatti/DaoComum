@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, DBAccess, Uni, Data.DB,
-  UniProvider, PostgreSQLUniProvider, Base, DaoUni;
+  UniProvider, PostgreSQLUniProvider, Base, DaoUni, ConnectionUni, TransactionUni;
 
 type
   TForm1 = class(TForm)
@@ -19,7 +19,6 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Button6: TButton;
-    UniConnection1: TUniConnection;
     procedure Button1Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
@@ -52,7 +51,7 @@ begin
     Edit1.Text := '';
     Edit1.Text := GetTableName(Atab);
   finally
-    atab.Free;
+    ATab.Free;
   end;
 end;
 

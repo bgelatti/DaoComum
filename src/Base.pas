@@ -2,54 +2,10 @@ unit Base;
 
 interface
 
-uses DB, SysUtils, Classes, Rtti, System.TypInfo, System.Generics.Collections;
+uses DB, SysUtils, Classes, Rtti, System.TypInfo, System.Generics.Collections,
+  RecParams, Table, ResultArray;
 
 type
-  TResultArray = array of string;
-
-  TTable = class(TObject)
-  end;
-
-  TRecParams = record
-    Prop: TRttiProperty;
-    Field: string;
-    Table: TTable;
-    Qry: TObject;
-  end;
-
-  TBaseConnection = class
-  private
-    FPass: string;
-    FPrt: Integer;
-    FUser: string;
-    FLocalBD: string;
-    FProvider: String;
-    FServ: String;
-    procedure SetPass(const Value: string);
-    procedure SetUser(const Value: string);
-    procedure SetLocalBD(const Value: string);
-    procedure SetProvider(const Value: String);
-    procedure SetServ(const Value: String);
-    procedure SetPrt(const Value: Integer);
-  public
-    function Connected: Boolean; virtual; abstract;
-    procedure Connect; virtual; abstract;
-    property LocalBD: string read FLocalBD write SetLocalBD;
-    property User: string read FUser write SetUser;
-    property Pass: string read FPass write SetPass;
-    property Serv: String read FServ write SetServ;
-    property Provider: String read FProvider write SetProvider;
-    property Prt: Integer read FPrt write SetPrt;
-  end;
-
-  TBaseTransaction = class
-  public
-    function InTransaction: Boolean; virtual; abstract;
-    procedure StartTransaction; virtual; abstract;
-    procedure Commit; virtual; abstract;
-    procedure RollBack; virtual; abstract;
-  end;
-
   TBaseDao = class(TObject)
   private
     procedure SetDataSet(const Value: TDataSet);
@@ -89,38 +45,6 @@ type
 implementation
 
 uses Atributos;
-
-{ TBaseConnection }
-
-procedure TBaseConnection.SetLocalBD(const Value: string);
-begin
-  FLocalBD := Value;
-end;
-
-procedure TBaseConnection.SetProvider(const Value: String);
-begin
-  FProvider := Value;
-end;
-
-procedure TBaseConnection.SetPrt(const Value: Integer);
-begin
-  FPrt := Value;
-end;
-
-procedure TBaseConnection.SetServ(const Value: String);
-begin
-  FServ := Value;
-end;
-
-procedure TBaseConnection.SetPass(const Value: string);
-begin
-  FPass := Value;
-end;
-
-procedure TBaseConnection.SetUser(const Value: string);
-begin
-  FUser := Value;
-end;
 
 { DaoBase }
 procedure TBaseDao.SetDataSet(const Value: TDataSet);

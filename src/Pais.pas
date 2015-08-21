@@ -3,7 +3,7 @@ unit Pais;
 interface
 
 uses
-  Atributos, System.Rtti, Base;
+  Atributos, System.Rtti, Base, Table;
 
 type
   [AttTable('COMUM.PAIS')]

@@ -95,9 +95,4 @@ object Form1: TForm1
     TabOrder = 7
     OnClick = Button6Click
   end
-  object UniConnection1: TUniConnection
-    ProviderName = 'PostgreSQL'
-    Left = 216
-    Top = 152
-  end
 end

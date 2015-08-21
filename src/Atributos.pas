@@ -3,7 +3,7 @@ unit Atributos;
 interface
 
 uses
-  Base, Rtti, System.Classes;
+  Base, Rtti, System.Classes, ResultArray, Table;
 
 type
   TAnonFields = record
