@@ -88,7 +88,6 @@
         <DCCReference Include="src\Atributos.pas"/>
         <DCCReference Include="src\Base.pas"/>
         <DCCReference Include="src\DaoUni.pas"/>
-        <DCCReference Include="src\Pais.pas"/>
         <DCCReference Include="src\UnitTeste.pas">
             <Form>Form1</Form>
             <FormType>dfm</FormType>
@@ -100,6 +99,7 @@
         <DCCReference Include="src\ResultArray.pas"/>
         <DCCReference Include="src\TransactionUni.pas"/>
         <DCCReference Include="src\ConnectionUni.pas"/>
+        <DCCReference Include="src\PaisTeste.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

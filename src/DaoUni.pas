@@ -11,7 +11,6 @@ type
   private
     FConnection: TConnectionUni;
     Qry: TUniQuery;
-    Function DbToTable<T: TTable>(ATable: TTable; ADataSet: TDataSet): TObjectList<T>;
   protected
     procedure QryParamInteger(ARecParams: TRecParams); override;
     procedure QryParamString(ARecParams: TRecParams); override;
@@ -22,6 +21,7 @@ type
     procedure SetFieldsString(ARecParams: TRecParams); override;
     procedure SetFieldsDate(ARecParams: TRecParams); override;
     procedure SetFieldsCurrency(ARecParams: TRecParams); override;
+    function DbToTable<T: TTable>(ATable: TTable; ADataSet: TDataSet): TObjectList<T>;
     function ExecuteQuery: Integer; override;
   public
     constructor Create(AConnection: TConnectionUni; ATransaction: TTransactionUni);
@@ -36,6 +36,7 @@ type
     function Update(ATable: TTable): Integer; override;
     function Delete(ATable: TTable): Integer; override;
     function Read(ATable: TTable): Integer; override;
+    function DataSetToTable(ATable: TTable; ADataset: TDataSet): TTable;
   end;
 
 implementation
@@ -163,6 +164,50 @@ begin
   with ARecParams do
   begin
     Prop.SetValue(Table, TUniQuery(Qry).FieldByName(Field).AsString);
+  end;
+end;
+
+function TDaoUni.DataSetToTable(ATable: TTable; ADataset: TDataSet): TTable;
+var
+  Context: TRttiContext;
+  Field: string;
+  RttiType: TRttiType;
+  PropRtti: TRttiProperty;
+begin
+  Context := TRttiContext.Create;
+  try
+    RttiType := Context.GetType(ATable.ClassType);
+    for PropRtti in RttiType.GetProperties do
+    begin
+      Field := PropRtti.Name;
+      case PropRtti.PropertyType.TypeKind of
+        tkInt64, tkInteger:
+          begin
+            PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsInteger);
+          end;
+        tkChar, tkString, tkUString:
+          begin
+            PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsString);;
+          end;
+        tkFloat:
+          begin
+            if CompareText(PropRtti.PropertyType.Name, 'TDateTime') = 0 then
+            begin
+              PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsDateTime);;
+            end
+            else
+            begin
+              PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsCurrency);
+            end;
+          end;
+      else
+        raise Exception.Create('Tipo de Campo não conhecido: ' +
+          PropRtti.PropertyType.ToString);
+      end;
+    end;
+    Result := ATable;
+  finally
+    Context.Free;
   end;
 end;
 

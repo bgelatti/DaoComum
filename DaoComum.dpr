@@ -5,7 +5,6 @@ uses
   Atributos in 'src\Atributos.pas',
   Base in 'src\Base.pas',
   DaoUni in 'src\DaoUni.pas',
-  Pais in 'src\Pais.pas',
   UnitTeste in 'src\UnitTeste.pas' {Form1},
   BaseTransaction in 'src\BaseTransaction.pas',
   BaseConnection in 'src\BaseConnection.pas',
@@ -13,7 +12,8 @@ uses
   Table in 'src\Table.pas',
   ResultArray in 'src\ResultArray.pas',
   TransactionUni in 'src\TransactionUni.pas',
-  ConnectionUni in 'src\ConnectionUni.pas';
+  ConnectionUni in 'src\ConnectionUni.pas',
+  PaisTeste in 'src\PaisTeste.pas';
 
 {$R *.res}
 

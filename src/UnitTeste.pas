@@ -40,7 +40,7 @@ implementation
 
 {$R *.dfm}
 
-uses Pais, Atributos;
+uses PaisTeste, Atributos;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
