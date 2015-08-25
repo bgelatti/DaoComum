@@ -191,6 +191,12 @@ begin
       begin
         Add(Sep + Field + ' = :' + Field);
       end;
+      Add('ORDER BY');
+      for Field in GetPk(ATable) do
+      begin
+        Add(Field);
+        Sep := ',';
+      end;
     end;
     Result := ASql.Text;
   finally

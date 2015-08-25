@@ -26,7 +26,7 @@ type
   public
     constructor Create(AConnection: TConnectionUni; ATransaction: TTransactionUni);
     destructor Destroy; override;
-    function SearchSQL(ASQL: string): TDataSet; override;
+    function SearchSql(ASql: string): TDataSet; override;
     function SearchTab(ATable: TTable; AFields: array of string): TDataSet; override;
     function SearchGen<T: TTable>(ATable: TTable; AFields: array of string): TObjectList<T>;
     function GetID(ATable: TTable; AField: string): Integer; override;
@@ -174,6 +174,7 @@ var
   RttiType: TRttiType;
   PropRtti: TRttiProperty;
 begin
+  Result := ATable;
   Context := TRttiContext.Create;
   try
     RttiType := Context.GetType(ATable.ClassType);
