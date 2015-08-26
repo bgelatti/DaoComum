@@ -181,29 +181,32 @@ begin
     for PropRtti in RttiType.GetProperties do
     begin
       Field := PropRtti.Name;
-      case PropRtti.PropertyType.TypeKind of
-        tkInt64, tkInteger:
-          begin
-            PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsInteger);
-          end;
-        tkChar, tkString, tkUString:
-          begin
-            PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsString);;
-          end;
-        tkFloat:
-          begin
-            if CompareText(PropRtti.PropertyType.Name, 'TDateTime') = 0 then
+      if ADataset.FindField(Field) <> nil then
+      begin
+        case PropRtti.PropertyType.TypeKind of
+          tkInt64, tkInteger:
             begin
-              PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsDateTime);;
-            end
-            else
-            begin
-              PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsCurrency);
+              PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsInteger);
             end;
-          end;
-      else
-        raise Exception.Create('Tipo de Campo não conhecido: ' +
-          PropRtti.PropertyType.ToString);
+          tkChar, tkString, tkUString:
+            begin
+              PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsString);;
+            end;
+          tkFloat:
+            begin
+              if CompareText(PropRtti.PropertyType.Name, 'TDateTime') = 0 then
+              begin
+                PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsDateTime);;
+              end
+              else
+              begin
+                PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsCurrency);
+              end;
+            end;
+        else
+          raise Exception.Create('Tipo de Campo não conhecido: ' +
+            PropRtti.PropertyType.ToString);
+        end;
       end;
     end;
     Result := ATable;
@@ -479,27 +482,34 @@ function TDaoUni.Delete(ATable: TTable): Integer;
 var
   Command: TReflectionFunc;
 begin
-  Command := function(AFields: TAnonFields): Integer
-  var
-    Field: string;
-    PropRtti: TRttiProperty;
-  begin
-    Qry.Close;
-    Qry.SQL.Clear;
-    Qry.SQL.Text := GenerateSQLDelete(ATable);
-    for Field in GetPk(ATable) do
+  try
+    Command := function(AFields: TAnonFields): Integer
+    var
+      Field: string;
+      PropRtti: TRttiProperty;
     begin
-      for PropRtti in AFields.RttiType.GetProperties do
+      Qry.Close;
+      Qry.SQL.Clear;
+      Qry.SQL.Text := GenerateSQLDelete(ATable);
+      for Field in GetPk(ATable) do
       begin
-        if CompareText(PropRtti.Name, Field) = 0 then
+        for PropRtti in AFields.RttiType.GetProperties do
         begin
-          ConfigureParameter(PropRtti, Field, ATable, Qry);
+          if CompareText(PropRtti.Name, Field) = 0 then
+          begin
+            ConfigureParameter(PropRtti, Field, ATable, Qry);
+          end;
         end;
       end;
+      Result := ExecuteQuery;
     end;
-    Result := ExecuteQuery;
+    Result := SQLReflection(ATable, Command);
+  except
+    on E: EUniError do
+    begin
+      raise Exception.Create(e.Message);
+    end;
   end;
-  Result := SQLReflection(ATable, Command);
 end;
 
 function TDaoUni.Insert(ATable: TTable): Integer;
@@ -529,7 +539,10 @@ begin
     end;
     Result := SQLReflection(ATable, Command);
   except
-    raise;
+    on E: Exception do
+    begin
+      raise;
+    end;
   end;
 end;
 
