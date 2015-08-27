@@ -192,9 +192,10 @@ begin
         Add(Sep + Field + ' = :' + Field);
       end;
       Add('ORDER BY');
+      Sep := '';
       for Field in GetPk(ATable) do
       begin
-        Add(Field);
+        Add(Sep + Field);
         Sep := ',';
       end;
     end;
