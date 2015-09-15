@@ -249,13 +249,17 @@ begin
     RttiType := Context.GetType(ATable.ClassType);
     i := 0;
     for PropRtti in RttiType.GetProperties do
+    begin
       for AtribRtti in PropRtti.GetAttributes do
+      begin
         if AtribRtti Is AttPK then
         begin
           SetLength(Result, i + 1);
           Result[i] := PropRtti.Name;
           inc(i);
         end;
+      end;
+    end;
   finally
     Context.free;
   end;

@@ -67,6 +67,8 @@ begin
   Qry := TUniQuery.Create(nil);
   Qry.Connection := FConnection.Database;
   Qry.Transaction := ATransaction.Transaction;
+  Qry.SpecificOptions.Values['UseParamTypes'] := 'True';
+  Qry.SpecificOptions.Values['UnknownAsString'] := 'True';
 
   MyDataSet := TUniQuery.Create(nil);
   MyDataSet.Connection := FConnection.Database;
@@ -84,7 +86,7 @@ begin
   inherited;
   with ARecParams do
   begin
-    TUniQuery(Qry).ParamByName(Field).AsCurrency := Prop.GetValue(Table).AsCurrency;
+    TUniQuery(Qry).ParamByName(Field).AsFloat := Prop.GetValue(Table).AsCurrency;
   end;
 end;
 
@@ -136,7 +138,7 @@ begin
   inherited;
   with ARecParams do
   begin
-    Prop.SetValue(Table, TUniQuery(Qry).FieldByName(Field).AsCurrency);
+    Prop.SetValue(Table, TUniQuery(Qry).FieldByName(Field).AsFloat);
   end;
 end;
 
@@ -200,7 +202,7 @@ begin
               end
               else
               begin
-                PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsCurrency);
+                PropRtti.SetValue(ATable, ADataset.FieldByName(Field).AsFloat);
               end;
             end;
         else
